@@ -38,14 +38,12 @@ module I18n
         return super if options[:fallback]
         default = extract_non_symbol_default!(options) if options[:default]
 
-        options[:fallback] = true
         I18n.fallbacks[locale].each do |fallback|
           catch(:exception) do
-            result = super(fallback, key, options)
+            result = super(fallback, key, options.merge(:fallback => true))
             return result unless result.nil?
           end
         end
-        options.delete(:fallback)
 
         return super(locale, nil, options.merge(:default => default)) if default
         throw(:exception, I18n::MissingTranslation.new(locale, key, options))
